@@ -98,14 +98,14 @@ export class FeedbackComponent {
       subject: "test mail",
       message: imageData,
     };
-    emailjs.send('service_y62ffza', 'template_xl6lj2a', params, 'iIhenH2o1lAQgHxyD')
-      .then(() => {
-        alert('Email sent!');
-      })
-      .catch((error) => {
-        console.error(error);
-        alert('Error sending email.');
-      });
+    // emailjs.send('service_y62ffza', 'template_xl6lj2a', params, 'iIhenH2o1lAQgHxyD')
+    //   .then(() => {
+    //     alert('Email sent!');
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //     alert('Error sending email.');
+    //   });
   }
 
   open(content: any) {
