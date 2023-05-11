@@ -1,7 +1,7 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import html2canvas from 'html2canvas';
-import * as emailjs from 'emailjs-com';
 
 interface BrowserDetails {
   name: string;
@@ -13,7 +13,7 @@ interface BrowserDetails {
   templateUrl: './feedback.component.html',
   styleUrls: ['./feedback.component.scss'],
 })
-export class FeedbackComponent {
+export class FeedbackComponent implements OnInit {
   @ViewChild('capture', { static: false })
   capture!: ElementRef;
 
@@ -25,7 +25,23 @@ export class FeedbackComponent {
     version: '',
   };
 
-  constructor(private modalService: NgbModal) {}
+  myForm: FormGroup ;
+
+  constructor(private modalService: NgbModal, private fb: FormBuilder) { 
+    this.myForm = this.fb.group({
+      mailTo: ['sanjay.bisht@geminisolutions.com'],
+      cc: ['', Validators.required],
+      comments: ['', Validators.required],
+      browserData: [this.getBrowserDetails()],
+      osData: [navigator.platform],
+      image: ['']
+    })
+  }
+
+  ngOnInit(){
+    
+  }
+
 
   getBrowserDetails(): BrowserDetails {
     const userAgent = navigator.userAgent;
@@ -68,10 +84,12 @@ export class FeedbackComponent {
     return { name, version };
   }
 
+  
+
   takeSs() {
     // Capture screenshot
     html2canvas(this.capture.nativeElement).then((canvas) => {
-      this.imgData = canvas.toDataURL('image/png');
+      this.imgData = canvas.toDataURL('image/png'); 
       this.img = new Image();
       this.img.src = this.imgData;
       this.img.onload = () => {
@@ -79,36 +97,23 @@ export class FeedbackComponent {
         this.img.style.width = 100 + '%';
       };
       document.getElementById('imageArea')?.appendChild(this.img);
-      
-    this.sendEmail();
 
-      // document.body.appendChild(this.img);
+      this.myForm.patchValue({
+        image: this.imgData
+      })
     });
-
-    // Print browser details
-    this.browserDetailsData = this.getBrowserDetails();
   }
 
-  sendEmail() {
-    
-    const imageData = this.imgData.split(',')[1];
-    const params = {
-      from_name: "PushpenderSingh",
-      to_name: 'pushpender.singh@geminisolutions.com',
-      subject: "test mail",
-      message: imageData,
-    };
-    // emailjs.send('service_y62ffza', 'template_xl6lj2a', params, 'iIhenH2o1lAQgHxyD')
-    //   .then(() => {
-    //     alert('Email sent!');
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //     alert('Error sending email.');
-    //   });
-  }
-
-  open(content: any) {
+  async open(content: any) {
+    await this.takeSs();
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
   }
+
+  sendData() { 
+    console.log(this.myForm.value)
+  }
 }
+
+// Open my modal me snapshot 
+// Fields - mail to (readonly), cc(input) , comments(input), broswerdetsils(show data), os details(show data), snapshot. 
+// Submit and console fields data 
