@@ -279,7 +279,7 @@
           class="form-control"
           name="cc"
           formControlName="cc"
-        
+          required
         />
         <span class="error-msg" *ngIf="!myForm.get('cc')?.valid && myForm.get('cc')?.touched">
           Please enter valid cc
@@ -287,13 +287,8 @@
       </div>
       <div class="form-group">
         <label for="comments">Comments</label>
-        <input
-          type="text"
-          class="form-control"
-          name="comments"
-          formControlName="comments"
-          
-        />
+        <textarea  class="form-control" name="comments" rows="4" cols="2" formControlName="comments" required></textarea>
+
         <span class="error-msg" *ngIf="!myForm.get('comments')?.valid && myForm.get('comments')?.touched">
           Please enter valid Comments
         </span>
@@ -304,23 +299,13 @@
         <span>{{ myForm.get('browserData')?.value.name }}</span>
         <span>{{ myForm.get('browserData')?.value.version }}</span>
       </div>
-      <div>
+      <div class="os-details">
         <span>{{ myForm.get('osData')?.value }}</span>
       </div>
 
-      <button type="button" class="btn btn-primary" (click)="sendData()" [disabled]="!myForm.valid">
+      <button type="button" class="btn btn-primary" (click)="sendData();modal.close()"  [disabled]="!myForm.valid">
         Submit
       </button>
     </form>
-  </div>
-
-  <div class="modal-footer">
-    <button
-      type="button"
-      class="btn btn-outline-dark"
-      (click)="modal.close('Save click')"
-    >
-      Ok
-    </button>
   </div>
 </ng-template>
