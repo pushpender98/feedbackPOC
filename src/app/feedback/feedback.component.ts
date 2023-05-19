@@ -129,6 +129,7 @@ export class FeedbackComponent implements OnInit {
   toggleHighlight(event: Event) {
     console.log(event);
     if (event) {
+      event.preventDefault();
       let highlightClass = (event.target as HTMLElement).classList.contains(
         'highlighted'
       );
