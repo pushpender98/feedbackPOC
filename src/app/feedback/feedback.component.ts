@@ -1,7 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import html2canvas from 'html2canvas';
+import { ImageCroppedEvent } from 'ngx-image-cropper';
 
 interface BrowserDetails {
   name: string;
@@ -25,23 +26,23 @@ export class FeedbackComponent implements OnInit {
     version: '',
   };
 
-  myForm: FormGroup ;
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
 
-  constructor(private modalService: NgbModal, private fb: FormBuilder) { 
+  myForm: FormGroup;
+
+  constructor(private modalService: NgbModal, private fb: FormBuilder) {
     this.myForm = this.fb.group({
       mailTo: ['sanjay.bisht@geminisolutions.com'],
       cc: ['', Validators.required],
       comments: ['', Validators.required],
       browserData: [this.getBrowserDetails()],
       osData: [navigator.platform],
-      image: ['']
-    })
+      image: [''],
+    });
   }
 
-  ngOnInit(){
-    
-  }
-
+  ngOnInit() {}
 
   getBrowserDetails(): BrowserDetails {
     const userAgent = navigator.userAgent;
@@ -84,36 +85,51 @@ export class FeedbackComponent implements OnInit {
     return { name, version };
   }
 
-  
-
   takeSs() {
     // Capture screenshot
     html2canvas(this.capture.nativeElement).then((canvas) => {
-      this.imgData = canvas.toDataURL('image/png'); 
-      this.img = new Image();
-      this.img.src = this.imgData;
-      this.img.onload = () => {
-        this.img.style.height = 100 + '%';
-        this.img.style.width = 100 + '%';
-      };
-      document.getElementById('imageArea')?.appendChild(this.img);
+      this.imgData = canvas.toDataURL('image/png');
+      // this.img = new Image();
+      // this.img.src = this.imgData;
+      // this.img.onload = () => {
+      //   this.img.style.height = 100 + '%';
+      //   this.img.style.width = 100 + '%';
+      // };
+      // document.getElementById('imageArea')?.appendChild(this.img);
 
-      this.myForm.patchValue({
-        image: this.imgData
-      })
+      // this.myForm.patchValue({
+      //   image: this.imgData,
+      // });
     });
   }
 
   async open(content: any) {
     await this.takeSs();
-    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title',size: 'lg', },);
   }
 
-  sendData() { 
-    console.log(this.myForm.value)
+  sendData() {
+    console.log(this.myForm.value);
+  }
+
+  imageCropped(event: ImageCroppedEvent) {
+    this.croppedImage = event.base64;
+
+    this.myForm.patchValue({
+      image: this.croppedImage,
+    });
+  }
+  imageLoaded() {
+    // show cropper
+  }
+  cropperReady() {
+    // cropper ready
+  }
+  loadImageFailed() {
+    // show message
   }
 }
 
-// Open my modal me snapshot 
-// Fields - mail to (readonly), cc(input) , comments(input), broswerdetsils(show data), os details(show data), snapshot. 
-// Submit and console fields data 
+// Open my modal me snapshot
+// Fields - mail to (readonly), cc(input) , comments(input), broswerdetsils(show data), os details(show data), snapshot.
+// Submit and console fields data
