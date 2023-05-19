@@ -6,3 +6,22 @@
   margin: 1rem 0;
 }
 
+.highlighted {
+  background-color: yellow;
+}
+
+.blackout {
+  background-color: black;
+  color: black;
+  position: relative;
+}
+
+.blackout::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: black;
+}

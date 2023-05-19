@@ -1,5 +1,11 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import html2canvas from 'html2canvas';
 
@@ -25,23 +31,25 @@ export class FeedbackComponent implements OnInit {
     version: '',
   };
 
-  myForm: FormGroup ;
+  myForm: FormGroup;
+  className: any;
 
-  constructor(private modalService: NgbModal, private fb: FormBuilder) { 
+  constructor(
+    private modalService: NgbModal,
+    private fb: FormBuilder,
+    private render: Renderer2
+  ) {
     this.myForm = this.fb.group({
       mailTo: ['sanjay.bisht@geminisolutions.com'],
       cc: ['', Validators.required],
       comments: ['', Validators.required],
       browserData: [this.getBrowserDetails()],
       osData: [navigator.platform],
-      image: ['']
-    })
+      image: [''],
+    });
   }
 
-  ngOnInit(){
-    
-  }
-
+  ngOnInit() {}
 
   getBrowserDetails(): BrowserDetails {
     const userAgent = navigator.userAgent;
@@ -84,12 +92,10 @@ export class FeedbackComponent implements OnInit {
     return { name, version };
   }
 
-  
-
   takeSs() {
     // Capture screenshot
     html2canvas(this.capture.nativeElement).then((canvas) => {
-      this.imgData = canvas.toDataURL('image/png'); 
+      this.imgData = canvas.toDataURL('image/png');
       this.img = new Image();
       this.img.src = this.imgData;
       this.img.onload = () => {
@@ -99,8 +105,8 @@ export class FeedbackComponent implements OnInit {
       document.getElementById('imageArea')?.appendChild(this.img);
 
       this.myForm.patchValue({
-        image: this.imgData
-      })
+        image: this.imgData,
+      });
     });
   }
 
@@ -109,11 +115,44 @@ export class FeedbackComponent implements OnInit {
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
   }
 
-  sendData() { 
-    console.log(this.myForm.value)
+  sendData() {
+    console.log(this.myForm.value);
+  }
+
+  highlight() {
+    this.className = 'highlighted';
+  }
+  blackout() {
+    this.className = 'blackout';
+  }
+
+  toggleHighlight(event: Event) {
+    console.log(event);
+    if (event) {
+      let highlightClass = (event.target as HTMLElement).classList.contains(
+        'highlighted'
+      );
+      let blackOutClass = (event.target as HTMLElement).classList.contains(
+        'blackout'
+      );
+
+      if (this.className) {
+        switch (this.className) {
+          case 'highlighted':
+            {
+              if (highlightClass) {
+                this.render.removeClass(event.target, this.className);
+              } else this.render.addClass(event.target, this.className);
+            }
+            break;
+
+          case 'blackout': {
+            if (blackOutClass) {
+              this.render.removeClass(event.target, this.className);
+            } else this.render.addClass(event.target, this.className);
+          }
+        }
+      }
+    }
   }
 }
-
-// Open my modal me snapshot 
-// Fields - mail to (readonly), cc(input) , comments(input), broswerdetsils(show data), os details(show data), snapshot. 
-// Submit and console fields data 
